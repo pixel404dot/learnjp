@@ -164,7 +164,7 @@ export function SessionSetup({
                       className={cn(
                         "mt-0.5 text-xs",
                         bn && "font-bn",
-                        on ? "text-accent-fg/70" : "text-subtle",
+                        on ? "text-accent-fg" : "text-muted",
                       )}
                     >
                       {hint}

@@ -225,8 +225,8 @@ function StudyPage() {
                 className={cn(
                   "mt-0.5 text-xs",
                   r.id === "good" || r.id === "easy"
-                    ? "text-accent-fg/70"
-                    : "text-subtle",
+                    ? "text-accent-fg"
+                    : "text-muted",
                 )}
               >
                 {r.hint}

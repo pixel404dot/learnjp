@@ -90,7 +90,7 @@ export function RowPicker({
                     <span
                       className={cn(
                         "mt-1 text-xs leading-tight",
-                        on ? "opacity-80" : "text-muted",
+                        on ? "" : "text-muted",
                       )}
                     >
                       {romajiPreview(row)}
