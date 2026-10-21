@@ -1,0 +1,1 @@
+import"./client-CzXb5v9u.js";var e={id:`dev-user`,displayName:`Dev User`,primaryEmail:`dev@example.com`,profileImageUrl:null,isDevFallback:!0};function t(){return{user:e,isPending:!1}}function n(){return t().user}export{t as n,n as t};
