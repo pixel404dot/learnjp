@@ -16,18 +16,29 @@ android {
             ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
+    // Release signing is read from android/keystore.properties (git-ignored).
+    // See android/keystore.properties.example. Without it, release builds are unsigned.
+    def keystorePropsFile = rootProject.file("keystore.properties")
+    def keystoreProps = new Properties()
+    if (keystorePropsFile.exists()) {
+        keystorePropsFile.withInputStream { keystoreProps.load(it) }
+    }
     signingConfigs {
         release {
-            storeFile file('learnkana-release.keystore')
-            storePassword 'learnkana12'
-            keyAlias 'learnkana'
-            keyPassword 'learnkana12'
+            if (keystorePropsFile.exists()) {
+                storeFile rootProject.file(keystoreProps["storeFile"])
+                storePassword keystoreProps["storePassword"]
+                keyAlias keystoreProps["keyAlias"]
+                keyPassword keystoreProps["keyPassword"]
+            }
         }
     }
     buildTypes {
         release {
             minifyEnabled false
-            signingConfig signingConfigs.release
+            if (keystorePropsFile.exists()) {
+                signingConfig signingConfigs.release
+            }
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
