@@ -82,7 +82,7 @@ All are optional — see [`.env.example`](.env.example).
 
 ### Static build (GitHub Pages)
 
-The live demo is deployed by [`.github/workflows/pages.yml`](.github/workflows/pages.yml) on every push to `main`. To build it yourself:
+The live demo is a client-only build published to GitHub Pages. To build it yourself:
 
 ```bash
 VITE_STATIC_SITE=true VITE_AUTH_ENABLED=false BASE_PATH=/learnjp/ npm run build:static
