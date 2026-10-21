@@ -1,3 +1,4 @@
+import { staticSite } from "@/lib/static-site";
 import { Link } from "@tanstack/react-router";
 import { Monitor, Moon, Sun } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -136,6 +137,11 @@ export function Header() {
 }
 
 function AuthSlot() {
+  if (staticSite) return null;
+  return <AuthSlotInner />;
+}
+
+function AuthSlotInner() {
   const { user, isPending } = useCurrentUserState();
   if (isPending) {
     return <div className="size-9 shrink-0 animate-pulse rounded-full bg-elevated" />;

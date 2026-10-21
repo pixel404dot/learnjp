@@ -1,3 +1,4 @@
+import { staticSite } from "@/lib/static-site";
 import { useEffect, useRef } from "react";
 import { loadProgress, saveProgress } from "@/lib/cloud-progress";
 import { mergeBundles } from "@/lib/decks";
@@ -49,6 +50,12 @@ function isUnauthorized(err: unknown) {
 }
 
 export function ProgressSync() {
+  // No server in the static build: progress stays in localStorage only.
+  if (staticSite) return null;
+  return <CloudProgressSync />;
+}
+
+function CloudProgressSync() {
   const { user, isPending } = useCurrentUserState();
   const hydrated = useKanaStore((s) => s.hydrated);
   const stats = useKanaStore((s) => s.stats);

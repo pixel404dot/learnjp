@@ -142,10 +142,20 @@ function authPopupPlugin(): Plugin {
   };
 }
 
+/**
+ * Static SPA build for GitHub Pages (or any static host):
+ *   VITE_STATIC_SITE=true BASE_PATH=/learnjp/ npm run build:static
+ * Produces a client-only app in dist/client with no server, auth or database.
+ * Regular builds are unaffected when these variables are unset.
+ */
+const staticSite = process.env.VITE_STATIC_SITE === "true";
+const basePath = process.env.BASE_PATH || "/";
+
 // `0.0.0.0:8080` is the live-preview contract — don't change host/port.
 // The dev server starts once `src/router.tsx` and `src/routes/` exist — see
 // AGENTS.md § "First scaffold".
 export default defineConfig(({ command, isPreview }) => ({
+  base: basePath,
   server: {
     host: "0.0.0.0",
     port: 8080,
@@ -166,8 +176,15 @@ export default defineConfig(({ command, isPreview }) => ({
     // PWA head + ?install=1 tutorial page; runs before Start/Nitro.
     grokPwaPlugin(),
     tailwindcss(),
-    tanstackStart(),
-    ...(command === "build" || isPreview
+    tanstackStart(
+      staticSite
+        ? {
+            router: { basepath: basePath },
+            spa: { enabled: true, prerender: { outputPath: "/index.html" } },
+          }
+        : undefined,
+    ),
+    ...((command === "build" || isPreview) && !staticSite
       ? [
           nitro({
             preset: "vercel",

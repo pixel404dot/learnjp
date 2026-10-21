@@ -1,4 +1,6 @@
+import { assetUrl, staticSite } from "@/lib/static-site";
 import {
+  ClientOnly,
   createRootRoute,
   HeadContent,
   Outlet,
@@ -29,10 +31,11 @@ export const Route = createRootRoute({
       { name: "apple-mobile-web-app-title", content: APP_NAME },
     ],
     links: [
-      { rel: "icon", type: "image/svg+xml", href: "/favicon.svg" },
+      { rel: "icon", type: "image/svg+xml", href: assetUrl("/favicon.svg") },
       { rel: "stylesheet", href: appCss },
-      { rel: "manifest", href: "/__grok/manifest.webmanifest" },
-      { rel: "apple-touch-icon", href: "/__grok/icon-180.png" },
+      // The web manifest is served by the app server, which the static build does not have.
+      ...(staticSite ? [] : [{ rel: "manifest", href: "/__grok/manifest.webmanifest" }]),
+      { rel: "apple-touch-icon", href: assetUrl("/__grok/icon-180.png") },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       {
         rel: "preconnect",
@@ -57,14 +60,28 @@ function RootDocument() {
       <body>
         <script dangerouslySetInnerHTML={{ __html: THEME_BOOT }} />
         <PreviewHostBridge />
-        <AuthProvider>
-          <Header />
-          <ProgressSync />
-          <Outlet />
-          <BottomNav />
-        </AuthProvider>
+        {staticSite ? (
+          // The static build prerenders one shell for every URL, so render the
+          // app on the client only to keep route-dependent UI (active nav) correct.
+          <ClientOnly>
+            <AppShell />
+          </ClientOnly>
+        ) : (
+          <AppShell />
+        )}
         <Scripts />
       </body>
     </html>
+  );
+}
+
+function AppShell() {
+  return (
+    <AuthProvider>
+      <Header />
+      <ProgressSync />
+      <Outlet />
+      <BottomNav />
+    </AuthProvider>
   );
 }

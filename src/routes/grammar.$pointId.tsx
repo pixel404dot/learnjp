@@ -1,3 +1,4 @@
+import { assetUrl } from "@/lib/static-site";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ChevronLeft, ChevronRight, Pause, Play } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -58,7 +59,7 @@ function Player({ n }: { n: number }) {
   meaningOn.current = showMeaning;
 
   useEffect(() => {
-    const audio = new Audio(`/audio/grammar/${id}.mp3`);
+    const audio = new Audio(assetUrl(`/audio/grammar/${id}.mp3`));
     audio.preload = "auto";
     audioRef.current = audio;
     let alive = true;
@@ -81,7 +82,7 @@ function Player({ n }: { n: number }) {
     audio.addEventListener("loadedmetadata", onMeta);
     audio.addEventListener("ended", onEnd);
     audio.addEventListener("canplay", onReady);
-    void fetch(`/audio/grammar/${id}.json`)
+    void fetch(assetUrl(`/audio/grammar/${id}.json`))
       .then((res) => (res.ok ? res.json() : null))
       .then((data: { starts?: number[]; duration?: number } | null) => {
         if (!alive || !data?.starts?.length) return;

@@ -1,3 +1,4 @@
+import { assetUrl } from "./static-site";
 import { AUDIO_BN } from "./audio-bn";
 import { AUDIO_FILES } from "./audio-files";
 import { AUDIO_MALE } from "./audio-male";
@@ -264,7 +265,7 @@ function playViaElement(url: string, token: number): Promise<boolean> {
 
     a.pause();
     a.muted = false;
-    a.src = url;
+    a.src = assetUrl(url);
     try {
       a.load();
     } catch {
