@@ -65,7 +65,7 @@ function LineBlock({
         reply && "pl-4",
       )}
     >
-      <SpeakButton text={line.speak} voice={voice} className="size-9" />
+      <SpeakButton text={line.speak} voice={voice} className="-m-1" />
       <div className="min-w-0 flex-1 pt-1.5">
         <p className="font-kana text-lg leading-snug">
           <JpRuby parts={line.parts} />
@@ -315,7 +315,7 @@ function ReadingLessonPage() {
                         : "border-border bg-surface",
                     )}
                   >
-                    <p className="font-kana text-[11px] tracking-wider text-subtle">
+                    <p className="font-kana text-xs tracking-wider text-subtle">
                       {row.speakerRuby ? (
                         <JpRuby parts={row.speakerRuby} />
                       ) : (
@@ -326,7 +326,7 @@ function ReadingLessonPage() {
                       <SpeakButton
                         text={row.line.speak}
                         voice={row.voice}
-                        className="size-9"
+                        className="-m-1"
                       />
                       <div className="min-w-0 pt-1.5">
                         <p className="font-kana text-lg leading-snug">

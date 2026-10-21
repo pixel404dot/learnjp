@@ -38,7 +38,7 @@ function CardsIndex() {
     <main className="page">
       <PageHeader
         backTo="/"
-        backLabel="Studio"
+        backLabel="Home"
         glyph="札"
         title="Cards"
         description="Your own lessons and kanji. Add cards by hand, then review them like Anki."
@@ -53,7 +53,7 @@ function CardsIndex() {
         <Button
           type="button"
           size="sm"
-          className="rounded-full"
+          className="h-11 rounded-full px-4"
           onClick={() => setOpen((v) => !v)}
         >
           <Plus className="size-4" />

@@ -40,7 +40,7 @@ export function SessionSetup({
             <h2 className="font-display text-2xl tracking-tight">Session</h2>
             <button
               type="button"
-              className="text-xs text-muted hover:text-fg"
+              className="-my-3 -mr-3 inline-flex min-h-11 items-center rounded-full px-3 text-sm text-muted hover:text-fg"
               onClick={() =>
                 setSettings({
                   sessionMode: "count",

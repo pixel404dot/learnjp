@@ -115,7 +115,7 @@ function Home() {
           </div>
           <Link
             to="/vocabulary"
-            className="text-sm text-muted no-underline hover:text-fg"
+            className="-my-3 -mr-3 inline-flex min-h-11 items-center rounded-full px-3 text-sm text-muted no-underline hover:text-fg"
           >
             Full index
           </Link>

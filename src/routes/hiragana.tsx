@@ -39,7 +39,7 @@ function HiraganaPage() {
         </div>
         <Link
           to="/katakana"
-          className="inline-flex h-10 items-center rounded-full bg-elevated px-4 text-sm text-fg no-underline shadow-[var(--shadow-border)]"
+          className="inline-flex h-11 items-center rounded-full bg-elevated px-4 text-sm text-fg no-underline shadow-[var(--shadow-border)]"
         >
           ア Katakana
         </Link>

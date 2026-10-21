@@ -48,7 +48,7 @@ export function RowPicker({
                   {label}
                 </p>
                 {tag === "yoon" ? (
-                  <p className="mt-0.5 text-[11px] text-subtle">
+                  <p className="mt-0.5 text-xs text-subtle">
                     {previewHint(rows)}
                     {" · …"}
                   </p>
@@ -56,7 +56,7 @@ export function RowPicker({
               </div>
               <button
                 type="button"
-                className="text-xs text-muted hover:text-fg"
+                className="-my-3 -mr-3 inline-flex min-h-11 min-w-11 items-center justify-center rounded-full px-3 text-sm text-muted hover:text-fg"
                 onClick={() => {
                   if (allOn) {
                     onSet(selected.filter((id) => !ids.includes(id)));
@@ -89,7 +89,7 @@ export function RowPicker({
                     </span>
                     <span
                       className={cn(
-                        "mt-1 text-[11px] leading-tight",
+                        "mt-1 text-xs leading-tight",
                         on ? "opacity-80" : "text-muted",
                       )}
                     >

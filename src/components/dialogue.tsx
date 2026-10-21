@@ -156,7 +156,7 @@ export function DialogueCard({
                   hidden && shake && "kana-shake",
                 )}
               >
-                <p className="text-[11px] uppercase tracking-wider text-subtle">
+                <p className="text-xs uppercase tracking-wider text-subtle">
                   {dialogue.speakers[line.speaker]}
                 </p>
                 {hidden ? (
@@ -192,7 +192,7 @@ export function DialogueCard({
                     <SpeakButton
                       text={line.jp}
                       voice={dialogue.voices[line.speaker]}
-                      className="size-9"
+                      className="-m-1"
                     />
                     <div className="min-w-0 pt-1.5">
                       <p className="font-kana text-lg leading-snug">{line.jp}</p>

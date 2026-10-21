@@ -48,7 +48,7 @@ function SheetRow({
       )}
     >
       <div className="flex items-center gap-1">
-        <SpeakButton text={word.jp} className="no-print size-9" />
+        <SpeakButton text={word.jp} className="no-print -m-1" />
         <p className="sheet-kana font-kana text-lg leading-tight">{word.jp}</p>
       </div>
       {word.kanji ? (
@@ -128,7 +128,7 @@ function DialogueSheet({
               <SpeakButton
                 text={line.jp}
                 voice={dialogue.voices[line.speaker]}
-                className="no-print size-9"
+                className="no-print -m-1"
               />
               <p className="sheet-kana font-kana text-lg leading-snug">{line.jp}</p>
             </div>

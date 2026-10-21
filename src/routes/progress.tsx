@@ -94,7 +94,7 @@ function ProgressGrid() {
               setHover(null);
             }}
             className={cn(
-              "flex-1 rounded-full px-3 py-2 text-sm capitalize",
+              "min-h-11 flex-1 rounded-full px-3 py-2 text-sm capitalize",
               tab === id ? "bg-accent text-accent-fg" : "text-muted hover:text-fg",
             )}
           >
@@ -146,7 +146,7 @@ function ProgressGrid() {
               >
                 {item.label}
               </span>
-              <span className="mt-1 text-[10px] opacity-70">{item.sub}</span>
+              <span className="mt-1 text-xs opacity-70">{item.sub}</span>
             </button>
           );
         })}
