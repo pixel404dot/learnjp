@@ -74,6 +74,7 @@ All are optional — see [`.env.example`](.env.example).
 | `npm run dev`          | Start the dev server on port 8080                                      |
 | `npm run build`        | Production build (Vercel output in `.vercel/output`) and DB migrations |
 | `npm run build:static` | Client-only build in `dist/client` (use with `VITE_STATIC_SITE=true`)  |
+| `npm run build:pages`  | GitHub Pages build: static build plus an HTML page for every route     |
 | `npm run preview`      | Preview the production build                                           |
 | `npm run lint`         | ESLint                                                                 |
 | `npm run typecheck`    | TypeScript type check                                                  |
@@ -85,9 +86,10 @@ All are optional — see [`.env.example`](.env.example).
 The live demo is a client-only build published to GitHub Pages. To build it yourself:
 
 ```bash
-VITE_STATIC_SITE=true VITE_AUTH_ENABLED=false BASE_PATH=/learnjp/ npm run build:static
-cp dist/client/index.html dist/client/404.html   # SPA fallback for deep links
+npm run build:pages            # BASE_PATH defaults to /learnjp/
 ```
+
+This runs the static build with `VITE_STATIC_SITE=true VITE_AUTH_ENABLED=false`, then `scripts/pages-routes.mjs` writes a copy of `index.html` for every route (kana pages, each vocabulary lesson, grammar point and reading lesson, …) so deep links return HTTP 200. `404.html` stays as the SPA fallback for anything else, such as your own card decks.
 
 The static build has no server, so **sign-in and cross-device progress sync are not available** there; everything else (all lessons, drills, audio, decks and progress) works and is stored in your browser’s `localStorage`.
 
