@@ -1,8 +1,9 @@
 import { staticSite } from "@/lib/static-site";
-import { Link } from "@tanstack/react-router";
+import { Link, useRouterState } from "@tanstack/react-router";
 import { Monitor, Moon, Sun } from "lucide-react";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/cn";
+import { NAV_ITEMS, isNavActive } from "@/lib/nav";
 import { UserButton } from "@/lib/auth/gates";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
 import {
@@ -36,8 +37,8 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-30 bg-bg/80 backdrop-blur-md print:hidden">
-      <div className="mx-auto flex h-16 max-w-5xl items-center justify-between gap-3 px-4 sm:h-[4.25rem] sm:px-6">
-        <Link to="/" className="flex min-w-0 items-center gap-3 text-fg no-underline">
+      <div className="mx-auto flex h-16 max-w-5xl items-center xl:max-w-6xl justify-between gap-3 px-4 sm:h-[4.25rem] sm:px-6">
+        <Link to="/" className="flex min-h-11 min-w-0 shrink-0 items-center gap-3 text-fg no-underline">
           <span className="grid size-9 shrink-0 place-items-center rounded-sm bg-seal font-display text-lg leading-none text-seal-fg">
             あ
           </span>
@@ -45,14 +46,15 @@ export function Header() {
             <span className="block whitespace-nowrap font-display text-sm leading-none tracking-tight sm:text-base">
               Learn Kana
             </span>
-            <span className="mt-1 hidden text-[0.65rem] uppercase tracking-[0.18em] text-subtle sm:block">
+            <span className="mt-1 hidden text-xs uppercase tracking-[0.16em] text-subtle sm:block">
               Japanese studio
             </span>
           </span>
         </Link>
-        <nav className="flex min-w-0 items-center gap-1.5 sm:gap-2">
+        <DesktopNav />
+        <div className="flex min-w-0 items-center gap-1.5 sm:gap-2" role="group" aria-label="Settings">
           <AuthSlot />
-          <div className="seg hidden md:inline-flex" role="radiogroup" aria-label="Color palette">
+          <div className="seg hidden md:inline-flex lg:hidden xl:inline-flex" role="radiogroup" aria-label="Color palette">
             {PALETTES.map((p) => (
               <button
                 key={p.id}
@@ -113,7 +115,7 @@ export function Header() {
           </div>
           <button
             type="button"
-            className="inline-flex size-9 items-center justify-center rounded-full bg-elevated text-muted shadow-[var(--shadow-border)] sm:hidden"
+            className="inline-flex size-11 items-center justify-center rounded-full bg-elevated text-muted shadow-[var(--shadow-border)] sm:hidden"
             aria-label={`Theme: ${theme}. Tap to change.`}
             onClick={() => {
               const next = theme === "dark" ? "light" : theme === "light" ? "system" : "dark";
@@ -129,7 +131,7 @@ export function Header() {
               <Moon className="size-3.5" />
             )}
           </button>
-        </nav>
+        </div>
       </div>
       <div className="h-px bg-border/80" />
     </header>
@@ -160,5 +162,29 @@ function AuthSlotInner() {
     >
       Sign in
     </Link>
+  );
+}
+
+function DesktopNav() {
+  const pathname = useRouterState({ select: (st) => st.location.pathname });
+  return (
+    <nav aria-label="Main" className="hidden min-w-0 flex-1 items-center justify-center gap-0.5 lg:flex">
+      {NAV_ITEMS.map(({ to, label }) => {
+        const on = isNavActive(to, pathname);
+        return (
+          <Link
+            key={to}
+            to={to}
+            aria-current={on ? "page" : undefined}
+            className={cn(
+              "inline-flex h-9 items-center rounded-full px-3 text-sm font-medium no-underline transition-colors duration-150",
+              on ? "bg-seal text-seal-fg" : "text-muted hover:bg-fg/5 hover:text-fg",
+            )}
+          >
+            {label}
+          </Link>
+        );
+      })}
+    </nav>
   );
 }
