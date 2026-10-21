@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { CircleHelp, Volume2, X } from "lucide-react";
+import { Check, CircleHelp, Volume2, X } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { SpeakButton } from "@/components/speak-button";
@@ -64,6 +64,13 @@ function norm(s: string) {
 function answersMatch(answers: string[], typed: string) {
   const t = norm(typed);
   return answers.some((a) => norm(a) === t);
+}
+
+/** True when no accepted answer starts with what has been typed so far. */
+function definitelyWrong(answers: string[], typed: string) {
+  const t = norm(typed);
+  if (!t) return false;
+  return !answers.some((a) => norm(a).startsWith(t));
 }
 
 function formatTime(sec: number) {
@@ -159,6 +166,9 @@ function PracticePage() {
   const [typed, setTyped] = useState("");
   const [done, setDone] = useState(0);
   const [shake, setShake] = useState(false);
+  const [feedback, setFeedback] = useState<"ok" | "bad" | null>(null);
+  const [hint, setHint] = useState(false);
+  const [firstTry, setFirstTry] = useState(0);
   const [revealed, setRevealed] = useState(false);
   const [showMeaning, setShowMeaning] = useState(false);
   const [choices, setChoices] = useState<string[]>([]);
@@ -172,6 +182,9 @@ function PracticePage() {
   const answeredRef = useRef(false);
   const lastWrongRef = useRef("");
   const missedRef = useRef(false);
+  const missesRef = useRef(0);
+  const wrongLatchRef = useRef(false);
+  const feedbackTimerRef = useRef<number | undefined>(undefined);
   const requeuedRef = useRef(new Set<string>());
   const statsRef = useRef(stats);
   const deckRef = useRef<PromptItem[]>([]);
@@ -221,6 +234,10 @@ function PracticePage() {
       setRevealed(false);
       setShowMeaning(false);
       setPrintMode(false);
+      setFeedback(null);
+      setHint(false);
+      missesRef.current = 0;
+      wrongLatchRef.current = false;
       answeredRef.current = false;
       lastWrongRef.current = "";
       missedRef.current = false;
@@ -310,20 +327,34 @@ function PracticePage() {
     pk.timeSum += Math.min(elapsed, 10_000);
     sessionRef.current.perKey[current.jp] = pk;
     if (settings.vocabLessonId && !missedRef.current) applySrs(current.key, true);
+    if (missesRef.current === 0 && !revealed) setFirstTry((v) => v + 1);
+    window.clearTimeout(feedbackTimerRef.current);
+    setFeedback("ok");
     const n = done + 1;
     setDone(n);
     const isWord = current.kind === "word";
     if (isWord) setShowMeaning(true);
     if (settings.sessionMode === "count" && n >= settings.countValue) {
-      window.setTimeout(finish, isWord ? 4000 : 220);
+      window.setTimeout(finish, isWord ? 4000 : 650);
       return;
     }
     if (isWord && !settings.autoNext) {
       answeredRef.current = false;
       return;
     }
-    window.setTimeout(() => next(current), isWord ? 4000 : 180);
-  }, [current, done, finish, next, setStats, settings, applySrs]);
+    window.setTimeout(() => next(current), isWord ? 4000 : 550);
+  }, [current, done, finish, next, setStats, settings, applySrs, revealed]);
+
+  /** Visible feedback for a miss; the correct answer appears after the second one. */
+  const flagWrong = useCallback(() => {
+    missesRef.current += 1;
+    if (missesRef.current >= 2) setHint(true);
+    setFeedback("bad");
+    setShake(true);
+    window.setTimeout(() => setShake(false), 280);
+    window.clearTimeout(feedbackTimerRef.current);
+    feedbackTimerRef.current = window.setTimeout(() => setFeedback(null), 900);
+  }, []);
 
   const onWrong = useCallback(() => {
     if (!current) return;
@@ -338,9 +369,8 @@ function PracticePage() {
     pk.wrong += 1;
     sessionRef.current.perKey[current.jp] = pk;
     missCurrent(current.key);
-    setShake(true);
-    window.setTimeout(() => setShake(false), 280);
-  }, [current, setStats]);
+    flagWrong();
+  }, [current, setStats, flagWrong]);
 
   const onType = (value: string) => {
     if (!current || answeredRef.current || showMeaning) return;
@@ -362,7 +392,21 @@ function PracticePage() {
       lastWrongRef.current = t;
       missCurrent(current.key);
     }
-    if (match) onCorrect();
+    if (match) {
+      onCorrect();
+      return;
+    }
+    const wrongNow = definitelyWrong(current.answers, value);
+    if (wrongNow && !wrongLatchRef.current) flagWrong();
+    wrongLatchRef.current = wrongNow;
+  };
+
+  const onSubmitTyped = () => {
+    if (!current || answeredRef.current || showMeaning || !typed.trim()) return;
+    if (answersMatch(current.answers, typed)) return;
+    if (!wrongLatchRef.current) flagWrong();
+    wrongLatchRef.current = false;
+    setTyped("");
   };
 
   const reveal = () => {
@@ -428,11 +472,18 @@ function PracticePage() {
   return (
     <div className="flex min-h-[calc(100dvh-4.25rem)] flex-col">
       <div className="mx-auto flex w-full max-w-3xl items-center justify-between gap-3 px-4 py-4">
-        <div className="min-w-20 font-display text-2xl tabular-nums tracking-tight">
+        <div
+          className="min-w-20 font-display text-2xl tabular-nums tracking-tight"
+          aria-live="polite"
+          aria-label={`${done}${goal === null ? "" : ` of ${goal}`} done, ${firstTry} correct on the first try`}
+        >
           {done}
           {goal === null ? null : (
             <span className="text-base text-muted"> / {goal}</span>
           )}
+          <span className="ml-1.5 font-sans text-sm tracking-normal text-muted">
+            · {firstTry} correct
+          </span>
         </div>
         {remaining === null ? (
           <div className="hidden items-center gap-4 text-xs text-subtle sm:flex">
@@ -509,8 +560,10 @@ function PracticePage() {
                 window.setTimeout(() => setPrintMode(false), 1500);
               }}
               className={cn(
-                "kana-pop select-none text-fg",
+                "kana-pop select-none text-fg transition-colors duration-150",
                 settings.handwritten && !printMode ? "font-hand" : "font-kana",
+                feedback === "ok" && "text-ok",
+                feedback === "bad" && "text-bad",
                 shake && "kana-shake text-bad",
               )}
             >
@@ -534,6 +587,25 @@ function PracticePage() {
             <p className="mt-4 text-sm text-muted">Listen, then type romaji</p>
           ) : null}
         </div>
+
+        <div className="mt-3 flex min-h-7 items-center justify-center text-base font-medium" aria-live="assertive">
+          {feedback === "ok" ? (
+            <span className="kana-pop inline-flex items-center gap-1.5 text-ok">
+              <Check className="size-5" strokeWidth={2.5} aria-hidden="true" />
+              Correct
+            </span>
+          ) : feedback === "bad" ? (
+            <span className="inline-flex items-center gap-1.5 text-bad">
+              <X className="size-5" strokeWidth={2.5} aria-hidden="true" />
+              Not quite{hint ? "" : ", try again"}
+            </span>
+          ) : null}
+        </div>
+        {hint && !revealed && !showMeaning && current ? (
+          <p className="text-center text-base text-muted">
+            Answer: <span className="font-display text-xl text-fg">{current.answers[0]}</span>
+          </p>
+        ) : null}
 
         {revealed && current ? (
           <div className="mt-4 text-center">
@@ -636,12 +708,23 @@ function PracticePage() {
             ref={inputRef}
             value={typed}
             onChange={(e) => onType(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                onSubmitTyped();
+              }
+            }}
+            aria-invalid={feedback === "bad" || undefined}
             autoComplete="off"
             autoCorrect="off"
             autoCapitalize="off"
             spellCheck={false}
             aria-label="Romaji answer"
-            className="mt-8 w-full max-w-xs border-0 border-b border-border bg-transparent text-center font-display text-3xl tracking-wide text-fg outline-none focus:border-accent"
+            className={cn(
+              "mt-6 w-full max-w-xs border-0 border-b-2 border-border bg-transparent py-1 text-center font-display text-3xl tracking-wide text-fg outline-none transition-colors focus:border-accent",
+              feedback === "bad" && "kana-shake border-bad text-bad focus:border-bad",
+              feedback === "ok" && "border-ok text-ok focus:border-ok",
+            )}
             placeholder="romaji"
           />
         )}
@@ -650,7 +733,7 @@ function PracticePage() {
           <button
             type="button"
             onClick={reveal}
-            className="mt-8 inline-flex items-center gap-1.5 text-sm text-subtle hover:text-muted"
+            className="mt-6 inline-flex min-h-11 min-w-11 items-center gap-1.5 rounded-full px-4 text-sm text-muted hover:bg-elevated hover:text-fg"
           >
             <CircleHelp className="size-4" />
             Reveal
