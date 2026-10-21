@@ -278,23 +278,6 @@ function LessonPage() {
                 words={[...vocab, ...phrases]}
                 onCurrent={setReadIndex}
               />
-              <Link
-                to="/vocabulary/$lessonId/shuffle"
-                params={{ lessonId: lesson.id }}
-                className="inline-flex min-h-11 items-center gap-2 rounded-full bg-elevated px-4 text-sm text-fg no-underline shadow-[var(--shadow-border)] hover:shadow-[var(--shadow-border-hover)]"
-              >
-                <Shuffle className="size-4" />
-                Shuffle page
-              </Link>
-              <Link
-                to="/vocabulary/$lessonId/shuffle"
-                params={{ lessonId: lesson.id }}
-                hash="print"
-                className="inline-flex min-h-11 items-center gap-2 rounded-full bg-elevated px-4 text-sm text-fg no-underline shadow-[var(--shadow-border)] hover:shadow-[var(--shadow-border-hover)]"
-              >
-                <Printer className="size-4" />
-                Print
-              </Link>
               <button
                 type="button"
                 onClick={() => setSettings({ showVocabMeanings: !showMeanings })}

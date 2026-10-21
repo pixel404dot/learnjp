@@ -53,7 +53,7 @@ function VocabularyPage() {
     <main className="page">
       <PageHeader
         backTo="/"
-        backLabel="Studio"
+        backLabel="Home"
         glyph="語"
         title="Vocabulary"
         description="Minna no Nihongo vocabulary, with English and Bangla. Open a lesson to listen, then drill."

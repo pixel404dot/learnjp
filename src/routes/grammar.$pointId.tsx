@@ -1,6 +1,6 @@
 import { assetUrl } from "@/lib/static-site";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ChevronLeft, ChevronRight, Pause, Play } from "lucide-react";
+import { ChevronLeft, ChevronRight, Pause, Play, RotateCcw, RotateCw, SkipBack, type LucideIcon } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/cn";
@@ -200,7 +200,7 @@ function Player({ n }: { n: number }) {
         >
           {playing ? <Pause className="size-5" /> : <Play className="ml-0.5 size-5" />}
         </button>
-        <span className="w-16 shrink-0 text-xs tabular-nums text-muted">{clock}</span>
+        <span className="w-[4.5rem] shrink-0 text-xs tabular-nums text-muted">{clock}</span>
         <input
           type="range"
           min={0}
@@ -208,7 +208,7 @@ function Player({ n }: { n: number }) {
           step={voiced ? 0.1 : 1}
           value={voiced ? time : index}
           aria-label="Lesson position"
-          className="min-w-0 flex-1 accent-[var(--seal)]"
+          className="h-11 min-w-0 flex-1 cursor-pointer accent-[var(--seal)]"
           onChange={(e) => {
             const value = Number(e.target.value);
             if (voiced) seekSeconds(value);
@@ -236,13 +236,17 @@ function Player({ n }: { n: number }) {
       </div>
 
       <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
-        <Control label="Repeat" onClick={() => playFrom(0)} />
+        <Control label="Restart" icon={SkipBack} onClick={() => playFrom(0)} />
         <Control
-          label="Back"
+          label={voiced ? "−5s" : "Prev line"}
+          ariaLabel={voiced ? "Back 5 seconds" : "Previous line"}
+          icon={RotateCcw}
           onClick={() => (voiced ? seekSeconds(time - 5) : playing ? playFrom(index - 1) : setIndex((i) => Math.max(0, i - 1)))}
         />
         <Control
-          label="Forward"
+          label={voiced ? "+5s" : "Next line"}
+          ariaLabel={voiced ? "Forward 5 seconds" : "Next line"}
+          icon={RotateCw}
           onClick={() =>
             voiced
               ? seekSeconds(time + 5)
@@ -261,7 +265,7 @@ function Player({ n }: { n: number }) {
       <section className="mt-6">
         <div className="mb-3 flex items-baseline justify-between">
           <h2 className="font-display text-xl">Script</h2>
-          <p className="text-sm text-subtle">{voiced ? "Grok" : "Follows the audio"}</p>
+          <p className="text-sm text-subtle">{voiced ? "Narrated audio" : "Follows the audio"}</p>
         </div>
         <div className="catalog">
           {cues.map((cue, i) => (
@@ -316,10 +320,14 @@ function Player({ n }: { n: number }) {
 
 function Control({
   label,
+  ariaLabel,
+  icon: Icon,
   onClick,
   pressed,
 }: {
   label: string;
+  ariaLabel?: string;
+  icon?: LucideIcon;
   onClick: () => void;
   pressed?: boolean;
 }) {
@@ -327,12 +335,14 @@ function Control({
     <button
       type="button"
       aria-pressed={pressed}
+      aria-label={ariaLabel}
       onClick={onClick}
       className={cn(
-        "min-h-11 rounded-full px-3 text-sm shadow-[var(--shadow-border)]",
+        "inline-flex min-h-11 items-center justify-center gap-1.5 rounded-full px-3 text-sm shadow-[var(--shadow-border)]",
         pressed ? "bg-accent text-accent-fg" : "bg-elevated text-fg",
       )}
     >
+      {Icon ? <Icon className="size-4 shrink-0" aria-hidden="true" /> : null}
       {label}
     </button>
   );

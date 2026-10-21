@@ -12,7 +12,7 @@ function ReadingIndex() {
     <main className="page">
       <PageHeader
         backTo="/"
-        backLabel="Studio"
+        backLabel="Home"
         glyph="読"
         title="Reading"
         description="Sentence patterns, examples, and conversations from Minna no Nihongo. Listen, then hide the meaning and read again."

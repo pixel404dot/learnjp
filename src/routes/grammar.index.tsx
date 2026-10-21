@@ -33,7 +33,7 @@ function GrammarIndex() {
     <main className="page">
       <PageHeader
         backTo="/"
-        backLabel="Studio"
+        backLabel="Home"
         glyph="文"
         title="Grammar"
         description="Twelve phases. Open one, then play the lesson: the line in front of you is the line being spoken. Hide the meaning and listen again."

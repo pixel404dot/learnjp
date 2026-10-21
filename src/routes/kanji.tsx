@@ -126,7 +126,7 @@ function KanjiPage() {
         className="back-link"
       >
         <ArrowLeft className="size-3.5" />
-        Studio
+        Home
       </Link>
       <p className="glyph mt-5">漢</p>
       <h1 className="mt-2 font-display text-4xl tracking-tight sm:text-5xl">Kanji</h1>
