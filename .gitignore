@@ -1,5 +1,50 @@
+# Dependencies
 node_modules/
-.project_id
-.github_repo
+
+# Build output
+dist/
+.output/
+.nitro/
+.vercel/
+.tanstack/
+*.tsbuildinfo
+
+# Environment / secrets
 .env
 .env.*
+!.env.example
+*.keystore
+*.jks
+android/keystore.properties
+
+# Android build artifacts
+*.apk
+*.aab
+android/.gradle/
+android/build/
+android/app/build/
+android/local.properties
+android/capacitor-cordova-android-plugins/
+android/app/src/main/assets/public/
+
+# Tooling / platform leftovers
+.grok/
+.project_id
+.github_repo
+.node_modules.lock
+attachments/
+startup.sh
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Logs & OS / editor files
+*.log
+npm-debug.log*
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json

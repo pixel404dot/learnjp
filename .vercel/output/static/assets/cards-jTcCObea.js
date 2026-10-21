@@ -1,1 +1,0 @@
-import{n as e}from"./Match-D62ErgeX.js";import{t}from"./jsx-runtime-0vZSBttN.js";var n=t();function r(){return(0,n.jsx)(e,{})}export{r as component};
